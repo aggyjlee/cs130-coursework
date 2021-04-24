@@ -2,19 +2,43 @@
     box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat:100,200,300');
+
 body {
     margin: 0px;
-    font-family: Arial, sans-serif;
+    font-family: 'Lato', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: rgb(160, 193, 255);
 }
 header, section {
     padding: 20px;
 }
+
+section {
+    box-sizing: border-box;
+    border: dotted 1px black;    
+    padding: 10px;             
+    margin: 10px;               
+    width: 50vh;             
+}
+
+img {
+    width: 15%;
+    justify-content: right;
+  }
+
+header {
+    background-color:#fffff8;
+}
+
 p, li {
     line-height: 1.5em;
 }
 
 #inspiration {
-    background-color: #F0F0F0;
+    background-color: #fffff8;
     padding-top: 40px;
     padding-bottom: 40px;
+    position: absolute;
+    top: 350px;
+    right: 0;
 }
