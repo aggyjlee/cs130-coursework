@@ -42,6 +42,6 @@ const chapter3 = () => {
 
 
 
-document.querySelector('#ch1').onclick = chapter1;
-document.querySelector('#ch2').onclick = chapter2;
-document.querySelector('#ch3').onclick = chapter3;
+document.querySelector('#ch1').onmouseover= chapter1;
+document.querySelector('#ch2').onmouseover = chapter2;
+document.querySelector('#ch3').onmouseover = chapter3;
