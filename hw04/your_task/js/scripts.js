@@ -16,19 +16,102 @@ const search = (ev) => {
     }
 }
 
+const playTrack = (ev) => {
+    //console.log(ev.currentTarget);
+    const elem = ev.currentTarget;
+    // preview url (the mp3) has been stashed in the "data-preview-track" attribute.
+    // we need to get that attribute out!
+    //const previewURL = elem.dataset.previewTrack;
+    const previewURL = elem.getAttribute('data-preview-track');
+    console.log(previewURL);
+    if(previewURL) {
+        audioPlayer.setAudioFile(previewURL);
+        audioPlayer.play();
+    } else {
+        console.log('there is no preview available for this track.');
+    }
+    document.querySelector('footer .track-item').innerHTML = elem.innerHTML;
+};
+
 const getTracks = (term) => {
-    console.log(`
-        get tracks from spotify based on the search term
-        "${term}" and load them into the #tracks section 
-        of the DOM...`);
+    let url = baseURL + "?type=track&q=" + term + "&limit=5";
+    fetch(url)
+        .then(response=> response.json())
+        .then(data => {
+                // what type of dat?
+                // it's a list of objects where each object represents a track of data
+                // display (as some sort of the HTML block) each of the tracks in the container.
+                // first slice the list [might not be necessary here]
+                // then loop through the results using for ... of
+                //console.log(data);
+            document.querySelector('#tracks').innerHTML = '';
+            for (const track of data) {
+                //create an HTML element for each track;
+                let template = '';
+                if (!track.preview_url){
+                    template = `
+                    <section class="track-item preview" data-preview-track="${track.preview_url}">
+                        <img src="${track.album.image_url}">
+                        <i class="fas play-track fa-play" aria-hidden="true"></i>
+                            <div class="label">
+                                <h3>${track.name} - No preview available </h3>
+                                <p>
+                                    ${track.artist.name}
+                                </p>
+                            </div>
+                    </section>`;
+                } else {
+                    template = `
+                    <section class="track-item preview" data-preview-track="${track.preview_url}">
+                        <img src="${track.album.image_url}">
+                        <i class="fas play-track fa-play" aria-hidden="true"></i>
+                            <div class="label">
+                                <h3>${track.name}</h3>
+                                <p>
+                                    ${track.artist.name}
+                                </p>
+                            </div>
+                    </section>`; 
+                }
+                document.querySelector('#tracks').innerHTML += template;
+            }
+            for (const elem of document.querySelectorAll('.track-item.preview')){
+                elem.onclick = playTrack;
+            }
+            if (data.length == 0){
+                const error = `<p>No tracks found that match your search criteria.</p>`;
+                document.querySelector('#tracks').innerHTML += error;
+            }
+        })
 };
 
 const getAlbums = (term) => {
-    console.log(`
-        get albums from spotify based on the search term
-        "${term}" and load them into the #albums section 
-        of the DOM...`);
+    let url = baseURL + "?type=album&q=" + term;
+    fetch(url)
+        .then(response=> response.json())
+        .then((data) => {
+            document.querySelector('#albums').innerHTML = '';
+            for (const album of data) {
+                const template = `<section class="album-card" id="${album.id}">
+                <div>
+                    <img src="${album.image_url}">
+                    <h3>${album.name}</h3>
+                    <div class="footer">
+                        <a href="${album.spotify_url}" target="_blank">
+                            view on spotify
+                        </a>
+                    </div>
+                </div>
+            </section>`;
+                document.querySelector('#albums').innerHTML += template;
+            }
+            if (data.length == 0){
+                const error = `<p>No albums were returned.</p>`;
+                document.querySelector('#albums').innerHTML += error;
+            }
+    })
 };
+
 
 const getArtist = (term) => {
     const elem = document.querySelector('#artist');
@@ -36,7 +119,7 @@ const getArtist = (term) => {
     fetch(baseURL + '?type=artist&q=' + term) /*no semi colon because fetch attaches */
     .then(response => response.json())
     .then((data) => {
-        if (data.length >0){
+        if (data.length > 0){
             const firstArtist = data[0];
             elem.innerHTML += getArtistHTML(firstArtist);
         }
